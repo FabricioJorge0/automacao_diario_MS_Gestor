@@ -1,0 +1,26 @@
+1º - entender a planilha do excel.
+2° - buscar automatização da tabela da esteira e as da direita
+3° - entrar, baixar, consolidar os arquivos baixados com o arquivo ja existente.
+
+
+
+caminhos para a automação
+1° - abrir navageador
+2° - acessar ms gestor
+3° - setar os meses de consulta (mês atual - 1 (mês anterior))
+
+
+Ferramentas
+- Python
+	- Pandas
+	- openpyxl
+	- OS
+	- talvez (matplotlib)
+
+
+
+
+MS GESTOR
+https://msgestor.msconnect.com.br/pages/auth/login
+LOGIN - allef.sousa
+SENHA - 98638C3
