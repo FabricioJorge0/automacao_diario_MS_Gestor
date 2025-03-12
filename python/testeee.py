@@ -12,6 +12,10 @@ pd.set_option("display.max_columns", None)
 vendedorLoja = tabela_vendas[["vendedor", "Valor"]].groupby("vendedor").sum()
 print(heapq.nlargest(3, vendedorLoja["Valor"]))
 
+
+#pip install pyxlsb    --- instalar isso aqui aaaaaaaa
+
+
 print("-"*50)
 
 """maiorVenda = 0
