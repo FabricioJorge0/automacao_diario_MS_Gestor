@@ -1,8 +1,16 @@
 1º - entender a planilha do excel.
 2° - buscar automatização da tabela da esteira e as da direita
 3° - entrar, baixar, consolidar os arquivos baixados com o arquivo ja existente.
+	- entrar
+		- link do site
+		- identificar campos de login (inspecionar pegar o ID do campo ou algo que se refere ao campo especifo)
+		- xpath (//tag[@atributo="valor]) ex: //input[@id="valor_do_id]
+		- xpath real: USUARIO ->  //input[@id='mat-input-26']
+			      SENHA -> //input[@id='mat-input-27']
+			      BOTÃO -> //button[@class='mat-focus-indicator submit-button ng-tns-c260-103 mat-raised-button mat-button-base mat-accent']
 
-
+		- Automatizar entrada de dados e click no login
+		- INSTALAR O SELENIUM (pip install selenium
 
 caminhos para a automação
 1° - abrir navageador
