@@ -7,10 +7,17 @@
 		- xpath (//tag[@atributo="valor]) ex: //input[@id="valor_do_id]
 		- xpath real: USUARIO ->  //input[@id='mat-input-26']
 			      SENHA -> //input[@id='mat-input-27']
-			      BOTÃO -> //button[@class='mat-focus-indicator submit-button ng-tns-c260-103 mat-raised-button mat-button-base mat-accent']
+			      BOTÃO -> //button[@class='']
 
 		- Automatizar entrada de dados e click no login
 		- INSTALAR O SELENIUM (pip install selenium
+	- capturar data de periodo de pesquisa
+		- identificar os campos de input de data
+		- encontrar elementos unicos deste input (id, class unica, nome...)
+		- input data inicio: - xpath (//tag[@atributo="valor]) ex: //input[@id='mat-input-30']
+		- input data final: xpath (//tag[@atributo="valor]) ex: //input[@id='mat-input-31']
+BOTÃO -> //button[@class='mat-focus-indicator ng-tns-c233-107 mat-raised-button mat-button-base mat-accent']
+
 
 caminhos para a automação
 1° - abrir navageador
