@@ -1,24 +1,62 @@
-'''from selenium import webdriver
+from selenium import webdriver
+from selenium.webdriver import ActionChains
 from selenium.webdriver.common.by import By
 from time import sleep
 from selenium.webdriver.common.keys import Keys
+from selenium.webdriver.support.ui import WebDriverWait
+from selenium.webdriver.support import expected_conditions as EC
 
 driver = webdriver.Chrome()
-driver.get("https://msgestor.msconnect.com.br/pages/auth/login")
-sleep(5)
 
-campo_usuario = driver.find_element(By.XPATH,"//input[@id='mat-input-26']")
-campo_senha = driver.find_element(By.XPATH,"//input[@id='mat-input-27']")
-#campo_botao = driver.find_element(By.XPATH, "//button[@class='mat-focus-indicator submit-button ng-tns-c260-103 mat-raised-button mat-button-base mat-accent']")
+try:
+    driver.get("https://msgestor.msconnect.com.br/pages/auth/login")
+    sleep(5)
 
-campo_usuario.send_keys('allef.sousa')
-campo_senha.send_keys('98638C3')
-campo_senha.send_keys(Keys.RETURN)
-#campo_botao.click()
+    campo_usuario = driver.find_element(By.XPATH,"//input[@id='mat-input-26']")
+    campo_senha = driver.find_element(By.XPATH,"//input[@id='mat-input-27']")
+    sleep(5)
+    campo_usuario.send_keys('allef.sousa')
+    campo_senha.send_keys('98638C3')
+    sleep(2)
+    campo_senha.send_keys(Keys.RETURN)
 
-input("")'''
+    sleep(10)
+    #campo_botao = driver.find_element(By.XPATH, "//button[@class='mat-focus-indicator mat-icon-button mat-button-base btnSettings mat-elevation-z4 theme-options-button ng-star-inserted side-panel-hidden']")
 
-from time import sleep
+
+    #actions = ActionChains(driver)
+    #actions.move_to_element(campo_botao).click().perform()
+
+except Exception as e:
+    print(f"Erro durante o login: {e}")
+
+
+try:
+    campo_botao = WebDriverWait(driver, 10).until(
+        EC.presence_of_element_located((By.XPATH, "//button[contains(@class, 'btnSettings')]"))
+
+
+    )
+    campo_botao.click()
+except Exception as e:
+    print("Erro ao encontrar o botão:", e)
+
+
+try:
+    campo_expandir = WebDriverWait(driver, 5).until(
+        EC.presence_of_element_located((By.XPATH, "//mat-expansion-panel-header[@id='mat-expansion-panel-header-17']"))
+
+    )
+    campo_expandir.click()
+except Exception as e:
+    print("Erro ao encontrar o botão:", e)
+finally:
+    input("Pressione Enter para fechar o navegador...")
+    driver.quit()
+
+
+    
+"""from time import sleep
 
 from selenium import webdriver
 from selenium.webdriver.common.by import By
@@ -29,14 +67,14 @@ from selenium.webdriver.chrome.service import Service
 from selenium.webdriver.common.keys import Keys
 
 def login_site(url, usuario, senha):
-    """
+    
     Realiza o login em um site usando Selenium.
 
     Args:
         url (str): O URL do site.
         usuario (str): O nome de usuário.
         senha (str): A senha.
-    """
+    
 
     # Inicializa o navegador (exemplo: Chrome)
     caminho_chromedriver = "C:\\Users\\06010940184\\automacao_diario_MS_Gestor\\python\\ChromeDriver\\chromedriver-win64\\chromedriver.exe"  # windows
@@ -94,4 +132,4 @@ url_do_site = "https://msgestor.msconnect.com.br/pages/auth/login"  # Substitua 
 nome_de_usuario = "allef.sousa"  # Substitua pelo seu nome de usuário
 senha_de_acesso = "98638C3"  # Substitua pela sua senha
 
-login_site(url_do_site, nome_de_usuario, senha_de_acesso)
+login_site(url_do_site, nome_de_usuario, senha_de_acesso)"""
