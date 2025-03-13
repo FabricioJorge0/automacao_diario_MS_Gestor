@@ -5,90 +5,63 @@ from time import sleep
 from selenium.webdriver.common.keys import Keys
 from selenium.webdriver.support.ui import WebDriverWait
 from selenium.webdriver.support import expected_conditions as EC
-from selenium.webdriver.chrome.options import Options
+import keyboard
+
+driver = webdriver.Chrome()
 
 
-download_dir = "M:\\ADM DE VENDAS PJ\\Diario Imput\\testeDeDownload"
-chrome_options = Options()
-chrome_options.add_argument("--start-maximized")  # Para abrir o navegador maximizado
-
-prefs = {
-    "download.default_directory": download_dir,  # Diretório de download
-    "download.prompt_for_download": False,  # Desativa o prompt de confirmação de download
-    "download.directory_upgrade": True,
-    "safebrowsing.enabled": True  # Habilita a navegação segura (impede mensagens de segurança)
-}
-chrome_options.add_experimental_option("prefs", prefs)
-
-driver = webdriver.Chrome(options=chrome_options)
-
-#função para diminuir o código
 def acao_site(elemento):
-
+    # Localiza a aba desejada para preenchimento da data e gera um click
     campo_expandir = WebDriverWait(driver, 5).until(
         EC.element_to_be_clickable((By.XPATH, elemento))
     )
     campo_expandir.click()
 
-def expandir_painel(xpath, path):
-
-    #encontra o painel de expansão de download e gera um click para expandir
-    campo_download = driver.find_element(By.XPATH, xpath)
-
-    # Aguarda o campo de data e abre o calendário
-    campo_download = WebDriverWait(driver, 10).until(
-        EC.element_to_be_clickable((By.ID, path))
-    )
-    campo_download.click()
-
-def downloadArquivos(xpath, path):
-    download_1 = driver.find_element(By.XPATH, xpath)
-    download_1 = WebDriverWait(driver, 5).until(
-        EC.element_to_be_clickable((By.ID, path))
-    )
-    download_1.click()
-    sleep(1)
 
 try:
-    #localiza a endereço e entrar no site MSGestor
+    # localiza a endereço e entrar no site MSGestor
     driver.get("https://msgestor.msconnect.com.br/pages/auth/login")
     sleep(2)
 
-    #Localiza os campos de login Usuário e senha
-    campo_usuario = driver.find_element(By.XPATH,"//input[@id='mat-input-26']")
-    campo_senha = driver.find_element(By.XPATH,"//input[@id='mat-input-27']")
+    # Localiza os campos de login Usuário e senha
+    campo_usuario = driver.find_element(By.XPATH, "//input[@id='mat-input-26']")
+    campo_senha = driver.find_element(By.XPATH, "//input[@id='mat-input-27']")
     sleep(1)
-    #Preencge os campos de login usuário e senha
+    # Preencge os campos de login usuário e senha
     campo_usuario.send_keys('allef.sousa')
     campo_senha.send_keys('98638C3')
     sleep(1)
-    #Gera um click no ENTER para realizar o Login
+    # Gera um click no ENTER para realizar o Login
     campo_senha.send_keys(Keys.RETURN)
 
     sleep(5)
 except Exception as e:
     print(f"Erro durante o login: {e}")
 
-
 try:
-    sleep(1)
-    #localiza o botão de configuração e gera um click
     acao_site("//button[contains(@class, 'btnSettings')]")
 
+    '''#Localiza o botão de configurações e gera um click
+    campo_botao = WebDriverWait(driver, 5).until(
+        EC.presence_of_element_located((By.XPATH, "//button[contains(@class, 'btnSettings')]"))
+
+
+    )
+    campo_botao.click()'''
 except Exception as e:
     print("Erro ao encontrar o botão:", e)
 
-
-
 try:
-    #localiza o painel de expanção para pesquisar a data e expande
     acao_site("//mat-expansion-panel-header[@id='mat-expansion-panel-header-16']")
 
+    '''#Localiza a aba desejada para preenchimento da data e gera um click
+    campo_expandir = WebDriverWait(driver, 5).until(
+        EC.element_to_be_clickable((By.XPATH, "//mat-expansion-panel-header[@id='mat-expansion-panel-header-16']"))
+    )
+    campo_expandir.click()'''
 except Exception as e:
     print("Erro ao encontrar ou expandir aba:", e)
 
-
-#Aqui irá encontrar os campos de data, criar um modal para pausar a aplicação para preenchimento manual das datas
 try:
 
     # Localiza os campos de data
@@ -100,7 +73,6 @@ try:
         EC.element_to_be_clickable((By.ID, "mat-input-28"))
     )
     campo_data_inicio.click()
-
 
     # Cria uma div na página com uma mensagem para preencher as datas desejadas
     driver.execute_script("""
@@ -147,56 +119,33 @@ try:
     print("Automação retomada após a seleção da data.")
 
     # Após o popup sair será gerado um click no botão "Aplicar e salvar filtros"
-    sleep(1)
-    acao_site("//button[@class='mat-focus-indicator ng-tns-c233-107 mat-raised-button mat-button-base mat-accent']")
+    campo_expandir = WebDriverWait(driver, 5).until(
+        EC.element_to_be_clickable((By.XPATH,
+                                    "//button[@class='mat-focus-indicator ng-tns-c233-107 mat-raised-button mat-button-base mat-accent']"))
+    )
+    campo_expandir.click()
+
 
 except Exception as e:
     print(f"Erro durante ao preencher campos de datas: {e}")
 
-
-
 try:
-    expandir_painel("//div[@id='mat-select-value-97']", "mat-select-value-97")
-    sleep(2)
-    downloadArquivos("//mat-option[@id='mat-option-227']", 'mat-option-227')
+
+    campo_download = driver.find_element(By.XPATH, "//div[@id='mat-select-value-97']")
+
+    # Aguarda o campo de data e abre o calendário
+    campo_data_inicio = WebDriverWait(driver, 10).until(
+        EC.element_to_be_clickable((By.ID, "mat-select-value-97"))
+    )
+    campo_download.click()
     sleep(5)
 
 
-except Exception as e:
-    print(f"Erro ao fazer download: {e}")
 
-
-elemento = driver.find_element(By.XPATH, '//div[@id="mat-select-value-95"]')  # Insira o XPATH correto do elemento
-# Realiza o scroll até o elemento
-driver.execute_script("arguments[0].scrollIntoView();", elemento)
-
-try:
-    expandir_painel("//div[@id='mat-select-value-95']", "mat-select-value-95")
-    sleep(2)
-    downloadArquivos("//mat-option[@id='mat-option-224']", "mat-option-224")
 
 except Exception as e:
     print(f"Erro ao expandir área de download: {e}")
 
-
-try:
-    expandir_painel("//div[@id='mat-select-value-93']", "mat-select-value-93")
-    sleep(2)
-    downloadArquivos("//mat-option[@id='mat-option-327']", "mat-option-327")
-    sleep(1)
-
-except Exception as e:
-    print(f"Erro ao expandir área de download: {e}")
 finally:
     input("Pressione Enter para fechar o navegador...")
     driver.quit()
-
-
-
-
-
-
-
-
-
-

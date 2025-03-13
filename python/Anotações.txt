@@ -16,7 +16,10 @@
 		- encontrar elementos unicos deste input (id, class unica, nome...)
 		- input data inicio: - xpath (//tag[@atributo="valor]) ex: //input[@id='mat-input-30']
 		- input data final: xpath (//tag[@atributo="valor]) ex: //input[@id='mat-input-31']
-BOTÃO -> //button[@class='mat-focus-indicator ng-tns-c233-107 mat-raised-button mat-button-base mat-accent']
+		BOTÃO -> //button[@class='mat-focus-indicator ng-tns-c233-107 mat-raised-button mat-button-base mat-accent']
+	
+	- expandir campo de seleção de download
+	1° campo - //div[@id='mat-select-value-97']
 
 
 caminhos para a automação
