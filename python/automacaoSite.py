@@ -6,13 +6,18 @@ from selenium.webdriver.common.keys import Keys
 from selenium.webdriver.support.ui import WebDriverWait
 from selenium.webdriver.support import expected_conditions as EC
 from selenium.webdriver.chrome.options import Options
+import pandas as pd
+import os
+import xlwings as xw
 
 
-download_dir = "M:\\ADM DE VENDAS PJ\\Diario Imput\\testeDeDownload"
+
+download_dir = "M:\\ADM DE VENDAS PJ\\Diario Imput\\testeDeDownload\\arquivos baixados"
 chrome_options = Options()
 chrome_options.add_argument("--start-maximized")  # Para abrir o navegador maximizado
 
 prefs = {
+    "profile.default_content_settings.popups": 0,  # Bloqueia popups de confirmação
     "download.default_directory": download_dir,  # Diretório de download
     "download.prompt_for_download": False,  # Desativa o prompt de confirmação de download
     "download.directory_upgrade": True,
@@ -171,6 +176,8 @@ elemento = driver.find_element(By.XPATH, '//div[@id="mat-select-value-95"]')  # 
 # Realiza o scroll até o elemento
 driver.execute_script("arguments[0].scrollIntoView();", elemento)
 
+sleep(2)
+
 try:
     expandir_painel("//div[@id='mat-select-value-95']", "mat-select-value-95")
     sleep(2)
@@ -201,8 +208,153 @@ try:
 except Exception as e:
     print(f"Erro ao expandir área de download: {e}")
 finally:
-    input("Pressione Enter para fechar o navegador...")
-    driver.quit()
+    from selenium.webdriver.common.by import By
+    from selenium.webdriver.support.ui import WebDriverWait
+    from selenium.webdriver.support import expected_conditions as EC
+
+    # Cria uma div na página com uma mensagem para fechar o driver
+    driver.execute_script("""
+        var popup = document.createElement('div');
+        popup.style.position = 'fixed';
+        popup.style.top = '50%';
+        popup.style.left = '30%';
+        popup.style.transform = 'translate(-50%, -50%)';
+        popup.style.backgroundColor = 'rgba(0, 0, 0, 0.7)';
+        popup.style.color = 'white';
+        popup.style.padding = '20px';
+        popup.style.borderRadius = '10px';
+        popup.style.fontSize = '18px';
+        popup.style.zIndex = '9999';  // Definindo um z-index alto para garantir que o popup fique à frente
+        popup.innerHTML = 'Quando finalizar os 3 downloads clique em OK para continuar...';
+
+        var button = document.createElement('button');
+        button.innerText = 'OK';
+        button.style.marginTop = '10px';
+        button.style.backgroundColor = '#4CAF50';
+        button.style.color = 'white';
+        button.style.padding = '10px 20px';
+        button.style.border = 'none';
+        button.style.borderRadius = '5px';
+        button.style.cursor = 'pointer';
+        button.onclick = function() {
+            popup.remove();  // Remove o popup
+            // Envia um evento para o Python saber que o botão foi clicado
+            window.localStorage.setItem('close_browser', 'true');  // Sinaliza que o botão foi clicado
+        };
+
+        popup.appendChild(button);
+        document.body.appendChild(popup);
+    """)
+
+    # Exibe a mensagem no terminal para indicar que o modal foi exibido
+    print("O popup foi exibido. Clique em OK para fechar o navegador.")
+
+    # Aguarda até que o botão OK seja clicado e a variável no localStorage seja definida
+    WebDriverWait(driver, 300).until(
+        lambda driver: driver.execute_script("return window.localStorage.getItem('close_browser')") == 'true'
+    )
+
+    # Após clicar em OK, fechamos o driver
+    driver.quit()  # Fecha o navegador
+
+    # A automação continua
+    print("Navegador fechado, e a aplicação continuará.")
+
+sleep(5)
+
+# Caminho da pasta onde os arquivos Excel estão localizados
+diretorio = "M:\\ADM DE VENDAS PJ\\Diario Imput\\testeDeDownload\\arquivos baixados"
+
+# Lista todos os arquivos da pasta
+arquivos = [f for f in os.listdir(diretorio) if f.endswith('.xlsx')]
+
+# Inicializa uma lista para armazenar os DataFrames
+lista_dfs = []
+
+# Itera sobre cada arquivo Excel encontrado
+for arquivo in arquivos:
+    # Lê o arquivo Excel
+    caminho_arquivo = os.path.join(diretorio, arquivo)
+    df = pd.read_excel(caminho_arquivo)
+
+    # Adiciona o DataFrame à lista
+    lista_dfs.append(df)
+
+# Concatena todos os DataFrames da lista
+df_final = pd.concat(lista_dfs, ignore_index=True, join="outer")
+
+caminho_salvar = "M:\\ADM DE VENDAS PJ\\Diario Imput\\testeDeDownload\\arquivo_unificado.xlsx"
+
+# Salva o DataFrame final em um novo arquivo Excel no caminho especificado
+df_final.to_excel(caminho_salvar, index=False)
+
+print("Arquivos unificados com colunas diferentes!")
+
+sleep(10)
+
+# Exclui os arquivos originais
+for arquivo in arquivos:
+    caminho_arquivo = os.path.join(diretorio, arquivo)
+    try:
+        os.remove(caminho_arquivo)  # Apaga o arquivo
+        print(f"Arquivo {arquivo} apagado com sucesso.")
+    except Exception as e:
+        print(f"Erro ao tentar apagar o arquivo {arquivo}: {e}")
+
+sleep(5)
+
+# Caminho para o arquivo unificado
+arquivo_unificado = "M:\\ADM DE VENDAS PJ\\Diario Imput\\testeDeDownload\\arquivo_unificado.xlsx"
+
+# Caminho para o arquivo de destino (o que você vai substituir)
+arquivo_destino = "M:\\ADM DE VENDAS PJ\\Diario Imput\\testeDeDownload\\DIARIO INPUT V.37.xlsb"
+
+
+# Lê o arquivo unificado
+df_unificado = pd.read_excel(arquivo_unificado)
+
+# Lê o arquivo de destino (arquivo .xlsb) usando xlwings
+
+
+try:
+    # Abre o arquivo .xlsb usando xlwings
+    wb_destino = xw.Book(arquivo_destino)
+
+    # Acessa a aba específica pelo nome (substitua 'Nome_da_Aba' pelo nome real da aba)
+    aba_destino = wb_destino.sheets['Esteira']
+
+    # Agora você pode fazer operações nessa aba
+    # Por exemplo, para ler dados de uma célula específica
+    valor = aba_destino.range('A3').value
+    print(f"Valor na célula A3: {valor}")
+
+    # Suponha que você queira substituir os dados da coluna A até a coluna AE com os dados do arquivo unificado
+    # (colunas de A a AE da aba desejada no arquivo de destino)
+    aba_destino.range('A3:AE' + str(len(df_unificado))).value = df_unificado.values.tolist()
+
+    # Salva e fecha o arquivo
+    wb_destino.save()
+    wb_destino.close()
+
+    print("Alterações feitas com sucesso!")
+
+except Exception as e:
+    print(f"Erro ao tentar abrir o arquivo {arquivo_destino}: {e}")
+
+# Exclui o arquivo unificado
+'''try:
+    os.remove(arquivo_unificado)  # Apaga o arquivo unificado
+    print(f"Arquivo {arquivo_unificado} apagado com sucesso.")
+except Exception as e:
+    print(f"Erro ao tentar apagar o arquivo {arquivo_unificado}: {e}")
+
+print("Dados substituídos com sucesso no arquivo de destino.")'''
+
+
+
+
+
+
 
 
 

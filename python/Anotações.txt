@@ -46,3 +46,5 @@ SENHA - 98638C3
 
 vendedorLoja = tabela_vendas[["data_criacao","Contrato","TIPO","vendedor", "Valor"]].groupby("vendedor").sum().nlargest(3, "Valor")
 print(vendedorLoja)
+
+pyxlsb
