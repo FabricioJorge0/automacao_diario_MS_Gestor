@@ -25,6 +25,7 @@ driver = webdriver.Chrome(options=chrome_options)
 #função para diminuir o código
 def acao_site(elemento):
 
+    #codigo para expendir o campo para buscar data
     campo_expandir = WebDriverWait(driver, 5).until(
         EC.element_to_be_clickable((By.XPATH, elemento))
     )
@@ -153,7 +154,7 @@ try:
 except Exception as e:
     print(f"Erro durante ao preencher campos de datas: {e}")
 
-
+sleep(15)
 
 try:
     expandir_painel("//div[@id='mat-select-value-97']", "mat-select-value-97")
@@ -178,12 +179,24 @@ try:
 except Exception as e:
     print(f"Erro ao expandir área de download: {e}")
 
+sleep(3)
 
 try:
-    expandir_painel("//div[@id='mat-select-value-93']", "mat-select-value-93")
+    #downloadArquivos("//mat-option[@id='mat-option mat-focus-indicator ng-tns-c130-220']", "mat-option-221")
+
+    expandirElemento = driver.find_element(By.ID, "mat-select-value-93")
+    # Força o clique com JavaScript
+    driver.execute_script("arguments[0].click();", expandirElemento)
+
     sleep(2)
-    downloadArquivos("//mat-option[@id='mat-option-327']", "mat-option-327")
-    sleep(1)
+    fazerDownload = driver.find_element(By.XPATH, "//mat-option[@value='detalhamento-msgestor']")
+    fazerDownload.click()
+
+
+
+
+
+
 
 except Exception as e:
     print(f"Erro ao expandir área de download: {e}")
