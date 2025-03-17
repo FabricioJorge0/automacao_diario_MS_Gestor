@@ -9,6 +9,9 @@ from selenium.webdriver.chrome.options import Options
 import pandas as pd
 import os
 import xlwings as xw
+import shutil
+import tempfile
+
 
 
 
@@ -309,6 +312,17 @@ arquivo_unificado = "M:\\ADM DE VENDAS PJ\\Diario Imput\\testeDeDownload\\arquiv
 # Caminho para o arquivo de destino (o que você vai substituir)
 arquivo_destino = "M:\\ADM DE VENDAS PJ\\Diario Imput\\testeDeDownload\\DIARIO INPUT V.37.xlsb"
 
+# Cria uma pasta temporária única para o usuário
+pasta_temp = tempfile.mkdtemp()  # Cria uma pasta temporária única
+arquivo_local = os.path.join(pasta_temp, "DIARIO INPUT V.37.xlsb")  # Caminho do arquivo temporário
+
+# Copia o arquivo da rede para a pasta local
+try:
+    shutil.copy(arquivo_destino, arquivo_local)
+    print(f"Arquivo copiado para a pasta temporária: {arquivo_local}")
+except Exception as e:
+    print(f"Erro ao copiar o arquivo da rede para local: {e}")
+    exit()
 
 # Lê o arquivo unificado
 df_unificado = pd.read_excel(arquivo_unificado)
@@ -318,7 +332,7 @@ df_unificado = pd.read_excel(arquivo_unificado)
 
 try:
     # Abre o arquivo .xlsb usando xlwings
-    wb_destino = xw.Book(arquivo_destino)
+    wb_destino = xw.Book(arquivo_local)
 
     # Acessa a aba específica pelo nome (substitua 'Nome_da_Aba' pelo nome real da aba)
     aba_destino = wb_destino.sheets['Esteira']
@@ -328,9 +342,15 @@ try:
     valor = aba_destino.range('A3').value
     print(f"Valor na célula A3: {valor}")
 
-    # Suponha que você queira substituir os dados da coluna A até a coluna AE com os dados do arquivo unificado
-    # (colunas de A a AE da aba desejada no arquivo de destino)
-    aba_destino.range('A3:AE' + str(len(df_unificado))).value = df_unificado.values.tolist()
+    titulos_colunas = aba_destino.range("A2:AE2").value
+    df_unificado.columns = titulos_colunas
+
+    # Define corretamente o intervalo de destino, começando da linha 3
+    intervalo_final = len(df_unificado) + 2  # Começa na linha 3, então soma 2
+    intervalo = f"A3:AE{intervalo_final}"
+
+    # Substitui apenas os dados, mantendo os títulos intactos
+    aba_destino.range(intervalo).value = df_unificado.values.tolist()
 
     # Salva e fecha o arquivo
     wb_destino.save()
@@ -341,14 +361,32 @@ try:
 except Exception as e:
     print(f"Erro ao tentar abrir o arquivo {arquivo_destino}: {e}")
 
+
+# Copia o arquivo modificado de volta para a rede
+try:
+    # Copia o arquivo modificado de volta para a rede
+    shutil.copy(arquivo_local, arquivo_destino)
+    print("Arquivo copiado de volta para a rede.")
+except Exception as e:
+    print(f"Erro ao copiar o arquivo de volta para a rede: {e}")
+    exit()
+
+# Exclui o arquivo temporário local
+try:
+    os.remove(arquivo_local)
+    os.rmdir(pasta_temp)
+    print("Arquivo e pasta temporária removidos.")
+except Exception as e:
+    print(f"Erro ao limpar arquivos temporários: {e}")
+
 # Exclui o arquivo unificado
-'''try:
+try:
     os.remove(arquivo_unificado)  # Apaga o arquivo unificado
     print(f"Arquivo {arquivo_unificado} apagado com sucesso.")
 except Exception as e:
     print(f"Erro ao tentar apagar o arquivo {arquivo_unificado}: {e}")
 
-print("Dados substituídos com sucesso no arquivo de destino.")'''
+print("Dados substituídos com sucesso no arquivo de destino.")
 
 
 
